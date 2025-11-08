@@ -259,6 +259,17 @@
             content: '💡';
             margin-right: 0.75rem;
             font-size: 1.5rem;
+            line-height: 1.2; /* Align icon better */
+        }
+        .recommendations li div h4 {
+            margin: 0 0 0.25rem 0;
+            font-family: 'Roboto', sans-serif;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        .recommendations li div p {
+            margin: 0;
+            font-size: 0.95rem;
         }
     </style>
 </head>
@@ -360,7 +371,7 @@
                 <input type="text" class="side-item-input" placeholder="Side Item" autocomplete="off">
                 <div class="suggestions"></div>
             </div>
-            <input type="text" class="quantity-input" placeholder="e.g., 1 cup, 2 tsp">
+            <input type="text" class="quantity-input" placeholder=" In Grams, Cups, Tablespoons, etc.">
             <button type="button" class="remove-item-btn">X</button>
         </div>
     </template>
@@ -489,6 +500,28 @@
             'waffle': { gl: 25, category: 'grain' },
             'white bread': { gl: 25, category: 'grain' },
             'white rice': { gl: 29, category: 'grain' },
+            'curd': { gl: 5, category: 'dairy' },
+            'butter': { gl: 0, category: 'dairy' },
+            'ghee': { gl: 0, category: 'dairy' },
+            'paneer': { gl: 0, category: 'dairy' },
+            'buttermilk': { gl: 4, category: 'dairy' },
+            'cream': { gl: 1, category: 'dairy' },
+            'raita': { gl: 5, category: 'dairy' },
+            'shrikhand': { gl: 20, category: 'sugar' },
+            'kheer': { gl: 25, category: 'sugar' },
+            'cottage cheese': { gl: 0, category: 'dairy' },
+            'sour cream': { gl: 1, category: 'dairy' },
+            'whey': { gl: 3, category: 'dairy' },
+            'coconut oil': { gl: 0, category: 'fat' },
+            'olive oil': { gl: 0, category: 'fat' },
+            'mustard oil': { gl: 0, category: 'fat' },
+            'groundnut oil': { gl: 0, category: 'fat' },
+            'sunflower oil': { gl: 0, category: 'fat' },
+            'coconut': { gl: 3, category: 'fruit' },
+            'coconut milk': { gl: 2, category: 'dairy' },
+            'condensed milk': { gl: 22, category: 'sugar' },
+            'khoya': { gl: 8, category: 'dairy' },
+            'mawa': { gl: 8, category: 'dairy' },
         };
         const allFoodNames = Object.keys(foodData);
 
@@ -613,6 +646,37 @@
             }
         });
 
+        function parseQuantity(quantityStr) {
+            if (!quantityStr || quantityStr.trim() === '') {
+                return 1.0; // Default multiplier if no quantity specified
+            }
+
+            const str = quantityStr.toLowerCase().trim();
+            
+            // Extract number from string (e.g., "200g", "2 cups", "1.5 tablespoons")
+            const match = str.match(/(\d+\.?\d*)/);
+            if (!match) return 1.0;
+            
+            const number = parseFloat(match[1]);
+            
+            // Convert different units to serving multipliers
+            // Assuming GL values in foodData are per standard serving (~100g or 1 cup)
+            if (str.includes('g') || str.includes('gram')) {
+                return number / 100; // Convert grams to servings (100g = 1 serving)
+            } else if (str.includes('cup')) {
+                return number; // 1 cup = 1 serving
+            } else if (str.includes('tablespoon') || str.includes('tbsp')) {
+                return number / 16; // ~16 tablespoons = 1 cup
+            } else if (str.includes('teaspoon') || str.includes('tsp')) {
+                return number / 48; // ~48 teaspoons = 1 cup
+            } else if (str.includes('oz') || str.includes('ounce')) {
+                return number / 3.5; // ~3.5 oz = 100g
+            } else {
+                // If just a number, treat it as grams
+                return number / 100;
+            }
+        }
+
         function analyzeDiet() {
             let totalGL = 0;
             const highGlFoods = [];
@@ -628,11 +692,10 @@
                 } else {
                     const foodList = document.getElementById(`${mealId}-food-list`);
                     const sideItemList = document.getElementById(`${mealId}-side-item-list`);
+                    
+                    // Process main foods (no quantity, use default GL)
                     const foodInputs = foodList.querySelectorAll('.food-input');
-                    const sideItemInputs = sideItemList.querySelectorAll('.side-item-input');
-                    const allInputs = [...foodInputs, ...sideItemInputs];
-
-                    allInputs.forEach(input => {
+                    foodInputs.forEach(input => {
                         const foodName = input.value.trim().toLowerCase();
                         if (foodData[foodName]) {
                             const data = foodData[foodName];
@@ -640,6 +703,27 @@
                             if (data.gl >= 20) highGlFoods.push(input.value);
                             if (data.category === 'sugar') sugarItems.push(input.value);
                             if (data.category === 'fried') friedItems.push(input.value);
+                        }
+                    });
+
+                    // Process side items (with quantity)
+                    const sideItems = sideItemList.querySelectorAll('.dynamic-list-item');
+                    sideItems.forEach(item => {
+                        const sideInput = item.querySelector('.side-item-input');
+                        const quantityInput = item.querySelector('.quantity-input');
+                        
+                        const foodName = sideInput.value.trim().toLowerCase();
+                        const quantityStr = quantityInput.value.trim();
+                        
+                        if (foodData[foodName]) {
+                            const data = foodData[foodName];
+                            const multiplier = parseQuantity(quantityStr);
+                            const adjustedGL = data.gl * multiplier;
+                            
+                            totalGL += adjustedGL;
+                            if (adjustedGL >= 20) highGlFoods.push(`${sideInput.value} (${quantityStr})`);
+                            if (data.category === 'sugar') sugarItems.push(sideInput.value);
+                            if (data.category === 'fried') friedItems.push(sideInput.value);
                         }
                     });
                 }
@@ -655,15 +739,15 @@
             scoreContainer.innerHTML = '';
             recommendationsList.innerHTML = '';
 
+            // 1. Display Score
             let scoreClass = 'low';
             let scoreMessage = 'Good! Your estimated Glycemic Load is low.';
-            if (totalGL > 70) {
-                scoreClass = 'medium';
-                scoreMessage = 'Could be better. Your estimated Glycemic Load is medium.';
-            }
             if (totalGL > 120) {
                 scoreClass = 'high';
                 scoreMessage = 'Attention! Your estimated Glycemic Load is high.';
+            } else if (totalGL > 70) {
+                scoreClass = 'medium';
+                scoreMessage = 'Could be better. Your estimated Glycemic Load is medium.';
             }
 
             const scoreCard = document.createElement('div');
@@ -671,43 +755,70 @@
             scoreCard.innerHTML = `<p>${scoreMessage}</p><div class="score">${Math.round(totalGL)}</div>`;
             scoreContainer.appendChild(scoreCard);
 
-            if (skippedMeals.length > 0) {
-                const li = document.createElement('li');
-                li.innerHTML = `You skipped ${skippedMeals.join(', ')}. Eating regular meals helps keep your blood sugar stable. Try not to skip meals, especially breakfast.`;
-                recommendationsList.appendChild(li);
-            }
+            // 2. Build and Prioritize Recommendations
+            const recommendations = [];
 
             if (totalGL > 100) {
-                const li = document.createElement('li');
-                li.innerHTML = `Your total Glycemic Load is high. Try to swap high-GL foods for low-GL options. For example, choose <b>brown rice</b> instead of <b>white rice</b>, or have an <b>apple</b> instead of a <b>donut</b>.`;
-                recommendationsList.appendChild(li);
+                recommendations.push({
+                    priority: 1,
+                    title: 'Reduce High Glycemic Load',
+                    description: `Your total Glycemic Load is high. Try swapping high-GL foods for low-GL options, like choosing <b>brown rice</b> over <b>white rice</b>.`
+                });
+            }
+
+            if (skippedMeals.length > 0) {
+                recommendations.push({
+                    priority: 1,
+                    title: 'Don\'t Skip Meals',
+                    description: `You skipped ${skippedMeals.join(', ')}. Eating regular meals helps keep your blood sugar stable, especially breakfast.`
+                });
             }
 
             if (highGlFoods.length > 0) {
-                const li = document.createElement('li');
-                li.innerHTML = `You consumed some high-glycemic foods: <b>${highGlFoods.join(', ')}</b>. These can cause rapid spikes in blood sugar. Consider reducing their portion size or frequency.`;
-                recommendationsList.appendChild(li);
+                recommendations.push({
+                    priority: 2,
+                    title: 'Limit High-GL Foods',
+                    description: `You ate: <b>${highGlFoods.join(', ')}</b>. These can cause rapid blood sugar spikes. Consider smaller portions or less frequent consumption.`
+                });
             }
             
             if (friedItems.length > 0) {
-                const li = document.createElement('li');
-                li.innerHTML = `You seem to enjoy fried foods like <b>${friedItems.join(', ')}</b>. While tasty, they are often high in unhealthy fats and calories. Consider baked, grilled, or steamed alternatives.`;
-                recommendationsList.appendChild(li);
+                recommendations.push({
+                    priority: 2,
+                    title: 'Reduce Fried Foods',
+                    description: `You included <b>${friedItems.join(', ')}</b>. While tasty, they're high in unhealthy fats. Try baked, grilled, or steamed alternatives.`
+                });
             }
 
             if (sugarItems.length > 1) {
-                const li = document.createElement('li');
-                li.innerHTML = `You have a high intake of sugary items like <b>${sugarItems.join(', ')}</b>. Reducing added sugars is one of the best ways to improve your diet.`;
-                recommendationsList.appendChild(li);
+                recommendations.push({
+                    priority: 2,
+                    title: 'Cut Down on Sugar',
+                    description: `Your diet included multiple sugary items like <b>${sugarItems.join(', ')}</b>. Reducing added sugar is a great way to improve your health.`
+                });
             }
 
-            const li_prot = document.createElement('li');
-            li_prot.innerHTML = `Ensure each meal contains a source of lean protein like <b>chicken, fish, beans, or tofu</b>. Protein helps stabilize blood sugar.`;
-            recommendationsList.appendChild(li_prot);
+            // 3. Add General Tips
+            recommendations.push({
+                priority: 3,
+                title: 'Include Lean Protein',
+                description: `Ensure each meal has a protein source like <b>chicken, fish, beans, or tofu</b> to help stabilize blood sugar.`
+            });
 
-            const li_veg = document.createElement('li');
-            li_veg.innerHTML = `Fill half your plate with non-starchy vegetables like <b>spinach, broccoli, and bell peppers</b>. They are low in calories and high in nutrients.`;
-            recommendationsList.appendChild(li_veg);
+            recommendations.push({
+                priority: 3,
+                title: 'Eat More Vegetables',
+                description: `Fill half your plate with non-starchy vegetables like <b>spinach, broccoli, and bell peppers</b>. They're packed with nutrients.`
+            });
+            
+            // 4. Sort and Display Recommendations
+            recommendations
+                .sort((a, b) => a.priority - b.priority)
+                .forEach(rec => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<div><h4>${rec.title}</h4><p>${rec.description}</p></div>`;
+                    recommendationsList.appendChild(li);
+                });
         }
 
     </script>
