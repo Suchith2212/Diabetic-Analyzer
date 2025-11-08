@@ -207,16 +207,7 @@
             text-transform: none;
             color: var(--text-color);
         }
-        /* ADD THIS TO YOUR <style> BLOCK */
-        .meal-time-input {
-            padding: 0.75rem;
-            border: 1px solid var(--medium-gray);
-            border-radius: 4px;
-            font-family: 'Lato', sans-serif;
-            margin-bottom: 1.5rem;
-            font-size: 1rem;
-            width: auto; /* Make it fit the content */
-        }
+
         #results {
             display: none;
             margin-top: 2rem;
@@ -280,6 +271,27 @@
             margin: 0;
             font-size: 0.95rem;
         }
+
+        /* NEW STYLES FROM PREVIOUS STEPS */
+        .meal-time-input {
+            padding: 0.75rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            font-family: 'Lato', sans-serif;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            width: auto;
+        }
+        .prep-modifier {
+            flex-basis: 120px;
+            flex-shrink: 0;
+            padding: 0.75rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            font-family: 'Lato', sans-serif;
+            background-color: #fff;
+            color: var(--text-color);
+        }
     </style>
 </head>
 <body>
@@ -289,80 +301,80 @@
     </header>
     <div class="container">
         <form id="dietForm">
+            
             <div class="meal" id="breakfast-meal">
                 <h2>Breakfast</h2>
                 <div class="meal-content">
                     <label for="breakfast-time">Meal Time</label>
                     <input type="time" id="breakfast-time" class="meal-time-input">
-
-                    <label>Main Foods</label>
+    
+                    <label style="margin-top: 1rem;">Food Items</label>
                     <div id="breakfast-food-list"></div>
-                    <button type="button" class="add-food-btn" data-meal="breakfast">Add Food</button>
-                    <label style="margin-top: 1rem;">Side Items</label>
-                    <div id="breakfast-side-item-list"></div>
-                    <button type="button" class="add-side-item-btn" data-meal="breakfast">Add Side Item</button>
+                    <button type="button" class="add-food-btn" data-meal="breakfast">Add Food Item</button>
                 </div>
                 <div class="skip-meal-container">
                     <input type="checkbox" class="skip-meal-checkbox" id="skip-breakfast" data-meal="breakfast">
                     <label for="skip-breakfast">I did not eat this meal</label>
                 </div>
             </div>
+
             <div class="meal" id="lunch-meal">
                 <h2>Lunch</h2>
                 <div class="meal-content">
                     <label for="lunch-time">Meal Time</label>
                     <input type="time" id="lunch-time" class="meal-time-input">
-                    <label>Main Foods</label>
+    
+                    <label style="margin-top: 1rem;">Food Items</label>
                     <div id="lunch-food-list"></div>
-                    <button type="button" class="add-food-btn" data-meal="lunch">Add Food</button>
-                    <label style="margin-top: 1rem;">Side Items</label>
-                    <div id="lunch-side-item-list"></div>
-                    <button type="button" class="add-side-item-btn" data-meal="lunch">Add Side Item</button>
+                    <button type="button" class="add-food-btn" data-meal="lunch">Add Food Item</button>
                 </div>
                 <div class="skip-meal-container">
                     <input type="checkbox" class="skip-meal-checkbox" id="skip-lunch" data-meal="lunch">
                     <label for="skip-lunch">I did not eat this meal</label>
                 </div>
             </div>
+
             <div class="meal" id="snacks-meal">
                 <h2>Snacks</h2>
                 <div class="meal-content">
                     <label for="snacks-time">Meal Time</label>
                     <input type="time" id="snacks-time" class="meal-time-input">
-                    <label>Main Foods</label>
+    
+                    <label style="margin-top: 1rem;">Food Items</label>
                     <div id="snacks-food-list"></div>
-                    <button type="button" class="add-food-btn" data-meal="snacks">Add Food</button>
-                    <label style="margin-top: 1rem;">Side Items</label>
-                    <div id="snacks-side-item-list"></div>
-                    <button type="button" class="add-side-item-btn" data-meal="snacks">Add Side Item</button>
+                    <button type="button" class="add-food-btn" data-meal="snacks">Add Food Item</button>
                 </div>
                 <div class="skip-meal-container">
                     <input type="checkbox" class="skip-meal-checkbox" id="skip-snacks" data-meal="snacks">
                     <label for="skip-snacks">I did not eat this meal</label>
                 </div>
             </div>
+
             <div class="meal" id="dinner-meal">
                 <h2>Dinner</h2>
                 <div class="meal-content">
                     <label for="dinner-time">Meal Time</label>
                     <input type="time" id="dinner-time" class="meal-time-input">
-                    <label>Main Foods</label>
+    
+                    <label style="margin-top: 1rem;">Food Items</label>
                     <div id="dinner-food-list"></div>
-                    <button type="button" class="add-food-btn" data-meal="dinner">Add Food</button>
-                    <label style="margin-top: 1rem;">Side Items</label>
-                    <div id="dinner-side-item-list"></div>
-                    <button type="button" class="add-side-item-btn" data-meal="dinner">Add Side Item</button>
+                    <button type="button" class="add-food-btn" data-meal="dinner">Add Food Item</button>
                 </div>
                 <div class="skip-meal-container">
                     <input type="checkbox" class="skip-meal-checkbox" id="skip-dinner" data-meal="dinner">
                     <label for="skip-dinner">I did not eat this meal</label>
                 </div>
             </div>
+
             <div class="meal" id="sleep-section">
-            <h2>Sleep Time</h2>
-            <label for="sleep-time">What time did you go to sleep?</label>
-            <input type="time" id="sleep-time" class="meal-time-input">
+                <h2>Sleep Time</h2>
+                <label for="sleep-time">What time did you go to sleep?</label>
+                <input type="time" id="sleep-time" class="meal-time-input">
+            
+                <label for="wake-time" style="margin-top: 1rem;">What time did you wake up?</label>
+                <input type="time" id="wake-time" class="meal-time-input">
             </div>
+
             <button type="submit" class="submit-button">Analyze My Diet</button>
         </form>
 
@@ -378,28 +390,13 @@
         </div>
     </div>
 
-    <template id="food-template">
+    <template id="food-item-template">
         <div class="dynamic-list-item">
             <div class="input-wrapper">
-                <input type="text" class="food-input" placeholder="Food Item" autocomplete="off">
+                <input type="text" class="food-input" placeholder="Food Item (e.g., Rice, Dosa, etc.)" autocomplete="off">
                 <div class="suggestions"></div>
             </div>
-            <select class="prep-modifier">
-                <option value="1.0" selected>Standard Prep</option>
-                <option value="0.8">Light / Healthy Prep</option>
-                <option value="1.25">Heavy / Indulgent Prep</option>
-            </select>
-            <button type="button" class="remove-item-btn">X</button>
-        </div>
-    </template>
-
-    <template id="side-item-template">
-        <div class="dynamic-list-item">
-            <div class="input-wrapper">
-                <input type="text" class="side-item-input" placeholder="Side Item" autocomplete="off">
-                <div class="suggestions"></div>
-            </div>
-            <input type="text" class="quantity-input" placeholder="In Grams, Cups, etc.">
+            <input type="text" class="quantity-input" placeholder="Quantity (e.g., 150g, 1 cup)">
             <select class="prep-modifier">
                 <option value="1.0" selected>Standard Prep</option>
                 <option value="0.8">Light / Healthy Prep</option>
@@ -555,6 +552,62 @@
             'condensed milk': { gl: 22, category: 'sugar' },
             'khoya': { gl: 8, category: 'dairy' },
             'mawa': { gl: 8, category: 'dairy' },
+            'grapes': { gl: 8, category: 'fruit' },
+            'pear': { gl: 4, category: 'fruit' },
+            'kiwi': { gl: 5, category: 'fruit' },
+            'mango': { gl: 10, category: 'fruit' },
+            'pineapple': { gl: 7, category: 'fruit' },
+            'watermelon': { gl: 4, category: 'fruit' },
+            'cherries': { gl: 10, category: 'fruit' },
+            'plum': { gl: 5, category: 'fruit' },
+            'blueberries': { gl: 4, category: 'fruit' },
+            'raspberries': { gl: 3, category: 'fruit' },
+            'papaya': { gl: 7, category: 'fruit' },
+            'guava': { gl: 4, category: 'fruit' },
+            'pomegranate': { gl: 10, category: 'fruit' },
+            'dates': { gl: 42, category: 'sugar' }, // High GL, often used as sugar
+            'raisins': { gl: 28, category: 'sugar' }, // High GL, often used as sugar
+            // --- NEW VEGETABLES ---
+            'zucchini': { gl: 1, category: 'vegetable' },
+            'green beans': { gl: 2, category: 'vegetable' },
+            'peas': { gl: 4, category: 'vegetable' },
+            'potato (boiled)': { gl: 13, category: 'vegetable' },
+            'sweet corn': { gl: 14, category: 'vegetable' },
+            'corn (sweet)': { gl: 11, category: 'vegetable' },
+            'spinach': { gl: 1, category: 'vegetable' },
+            'potato (fried)': { gl: 22, category: 'vegetable' },
+            'pumpkin': { gl: 3, category: 'vegetable' },
+            'radish': { gl: 1, category: 'vegetable' },
+            'beetroot': { gl: 5, category: 'vegetable' },
+            'celery': { gl: 1, category: 'vegetable' },
+            'kale': { gl: 2, category: 'vegetable' },
+            'leek': { gl: 3, category: 'vegetable' },
+            'artichoke': { gl: 2, category: 'vegetable' },
+            'cucumbers': { gl: 1, category: 'vegetable' },
+            'capsicum': { gl: 1, category: 'vegetable' }, // Another name for bell pepper
+            // --- NEW GRAINS & LEGUMES ---
+            'barley': { gl: 16, category: 'grain' },
+            'millet': { gl: 19, category: 'grain' },
+            'buckwheat': { gl: 13, category: 'grain' },
+            'kidney beans': { gl: 7, category: 'protein' },
+            'black beans': { gl: 7, category: 'protein' },
+            'soybeans': { gl: 1, category: 'protein' },
+            'edamame': { gl: 2, category: 'protein' },
+            // --- NEW PROTEINS & DAIRY ---
+            'beef': { gl: 0, category: 'protein' },
+            'pork': { gl: 0, category: 'protein' },
+            'lamb': { gl: 0, category: 'protein' },
+            'shrimp': { gl: 0, category: 'protein' },
+            'salmon': { gl: 0, category: 'protein' },
+            'tuna': { gl: 0, category: 'protein' },
+            'soy milk': { gl: 2, category: 'dairy' },
+            'almond milk': { gl: 0, category: 'dairy' },
+            // --- NEW SWEETENERS & MISC ---
+            'honey': { gl: 19, category: 'sugar' },
+            'jaggery': { gl: 45, category: 'sugar' }, // Very high GL
+            'maple syrup': { gl: 19, category: 'sugar' },
+            'cashews': { gl: 3, category: 'protein' },
+            'walnuts': { gl: 0, category: 'protein' },
         };
         const allFoodNames = Object.keys(foodData);
 
@@ -589,13 +642,14 @@
             }
         });
 
-        function addDynamicInput(meal, type, inputClass) {
+        // UPDATED: Simplified add function
+        function addDynamicInput(meal) {
             isFormDirty = true;
-            const list = document.getElementById(`${meal}-${type}-list`);
-            const template = document.getElementById(`${type}-template`);
+            const list = document.getElementById(`${meal}-food-list`);
+            const template = document.getElementById('food-item-template');
             const clone = template.content.cloneNode(true);
             
-            const input = clone.querySelector(`.${inputClass}`);
+            const input = clone.querySelector('.food-input');
             const suggestionsContainer = clone.querySelector('.suggestions');
             setupAutocomplete(input, suggestionsContainer, allFoodNames);
 
@@ -607,12 +661,9 @@
             input.focus();
         }
 
+        // UPDATED: Simplified button listener
         document.querySelectorAll('.add-food-btn').forEach(button => {
-            button.addEventListener('click', () => addDynamicInput(button.dataset.meal, 'food', 'food-input'));
-        });
-
-        document.querySelectorAll('.add-side-item-btn').forEach(button => {
-            button.addEventListener('click', () => addDynamicInput(button.dataset.meal, 'side-item', 'side-item-input'));
+            button.addEventListener('click', () => addDynamicInput(button.dataset.meal));
         });
 
         document.querySelectorAll('.skip-meal-checkbox').forEach(checkbox => {
@@ -637,34 +688,76 @@
                 e.preventDefault();
             }
         });
- /**
- * Calculates the time difference in hours between two "HH:MM" time strings.
- * Correctly handles overnight (e.g., 22:00 to 02:00).
- * @param {string} startTimeStr - e.g., "21:00"
- * @param {string} endTimeStr - e.g., "06:00"
- * @returns {number} The difference in hours.
- */
+        
+        window.addEventListener('beforeunload', function (e) {
+            if (isFormDirty) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+            }
+        });
+
+        const unitConversions = {
+            'cup': 240,
+            'cups': 240,
+            'tablespoon': 15,
+            'tablespoons': 15,
+            'tbsp': 15,
+            'teaspoon': 5,
+            'teaspoons': 5,
+            'tsp': 5,
+            'g': 1,
+            'gram': 1,
+            'grams': 1,
+            'oz': 28.35,
+            'ounce': 28.35,
+            'ounces': 28.35
+        };
+
+        function parseQuantityToGrams(quantityStr) {
+            if (!quantityStr || quantityStr.trim() === '') {
+                // Default to 100g if quantity is blank
+                return 100; 
+            }
+            
+            const str = quantityStr.toLowerCase().trim();
+            
+            const justNumber = parseFloat(str);
+            if (!isNaN(justNumber) && justNumber.toString() === str) {
+                return justNumber; // Assume grams
+            }
+
+            const match = str.match(/^(\d+\.?\d*)\s*([a-z]+)/);
+            if (match) {
+                const amount = parseFloat(match[1]);
+                const unit = match[2];
+                if (unitConversions[unit]) {
+                    return amount * unitConversions[unit];
+                }
+            }
+
+            console.warn(`Could not parse quantity: "${str}". Defaulting to 100g.`);
+            return 100;
+        }
+
         function calculateTimeGap(startTimeStr, endTimeStr) {
             try {
                 const [startH, startM] = startTimeStr.split(':').map(Number);
                 const [endH, endM] = endTimeStr.split(':').map(Number);
-
                 let startMinutes = (startH * 60) + startM;
                 let endMinutes = (endH * 60) + endM;
-
-                // Handle overnight
                 if (endMinutes < startMinutes) {
-                    endMinutes += 24 * 60; // Add 24 hours in minutes
+                    endMinutes += 24 * 60;
                 }
-
                 const diffMinutes = endMinutes - startMinutes;
-                return diffMinutes / 60; // Convert to hours
+                return diffMinutes / 60;
             } catch (e) {
                 console.error("Error calculating time gap:", e);
-                return -1; // Return an error code
+                return -1;
             }
         }
-       function validateForm() {
+        
+        // UPDATED: Simplified validation
+        function validateForm() {
             const meals = ['breakfast', 'lunch', 'snacks', 'dinner'];
             const missingMeals = [];
             const missingTimes = [];
@@ -672,12 +765,10 @@
             for (const meal of meals) {
                 const isSkipped = document.getElementById(`skip-${meal}`).checked;
                 if (!isSkipped) {
-                    // Check for at least one main food
                     const foodList = document.getElementById(`${meal}-food-list`);
                     if (foodList.children.length === 0) {
                         missingMeals.push(meal.charAt(0).toUpperCase() + meal.slice(1));
                     }
-                    // Check for meal time
                     const timeInput = document.getElementById(`${meal}-time`);
                     if (!timeInput.value) {
                         missingTimes.push(meal.charAt(0).toUpperCase() + meal.slice(1));
@@ -685,9 +776,11 @@
                 }
             }
 
-            // Check for sleep time
             if (!document.getElementById('sleep-time').value) {
-                missingTimes.push('Sleep');
+                missingTimes.push('Sleep Time');
+            }
+            if (!document.getElementById('wake-time').value) {
+                missingTimes.push('Wake Time');
             }
 
             if (missingMeals.length > 0) {
@@ -707,7 +800,6 @@
             if (!validateForm()) {
                 return;
             }
-
             if (confirm("Are you sure you want to analyze your diet?")) {
                 isFormDirty = false;
                 analyzeDiet();
@@ -716,47 +808,10 @@
             }
         });
 
-        window.addEventListener('beforeunload', function (e) {
-            if (isFormDirty) {
-                e.preventDefault();
-                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
-            }
-        });
-
-        function parseQuantity(quantityStr) {
-            if (!quantityStr || quantityStr.trim() === '') {
-                return 1.0; // Default multiplier if no quantity specified
-            }
-
-            const str = quantityStr.toLowerCase().trim();
-            
-            // Extract number from string (e.g., "200g", "2 cups", "1.5 tablespoons")
-            const match = str.match(/(\d+\.?\d*)/);
-            if (!match) return 1.0;
-            
-            const number = parseFloat(match[1]);
-            
-            // Convert different units to serving multipliers
-            // Assuming GL values in foodData are per standard serving (~100g or 1 cup)
-            if (str.includes('g') || str.includes('gram')) {
-                return number / 100; // Convert grams to servings (100g = 1 serving)
-            } else if (str.includes('cup')) {
-                return number; // 1 cup = 1 serving
-            } else if (str.includes('tablespoon') || str.includes('tbsp')) {
-                return number / 16; // ~16 tablespoons = 1 cup
-            } else if (str.includes('teaspoon') || str.includes('tsp')) {
-                return number / 48; // ~48 teaspoons = 1 cup
-            } else if (str.includes('oz') || str.includes('ounce')) {
-                return number / 3.5; // ~3.5 oz = 100g
-            } else {
-                // If just a number, treat it as grams
-                return number / 100;
-            }
-        }
-
+        // UPDATED: Simplified analysis logic
         function analyzeDiet() {
             let totalGL = 0;
-            let dinnerGL = 0; // *** NEW: Track dinner GL separately ***
+            let dinnerGL = 0;
             const highGlFoods = [];
             const sugarItems = [];
             const friedItems = [];
@@ -765,40 +820,19 @@
             const meals = ['breakfast', 'lunch', 'snacks', 'dinner'];
             
             meals.forEach(mealId => {
-                let currentMealGL = 0; // Track GL for the current meal
+                let currentMealGL = 0;
                 const isSkipped = document.getElementById(`skip-${mealId}`).checked;
                 
                 if (isSkipped) {
                     skippedMeals.push(mealId);
                 } else {
-                    // --- Process Main Foods (With Modifier) ---
-                    const foodList = document.getElementById(`${mealId}-food-list`);
-                    const foodRows = foodList.querySelectorAll('.dynamic-list-item');
+                    
+                    // --- Process Food Items (With Quantity AND Modifier) ---
+                    const foodItemList = document.getElementById(`${mealId}-food-list`);
+                    const foodItemRows = foodItemList.querySelectorAll('.dynamic-list-item');
 
-                    foodRows.forEach(row => {
-                        const input = row.querySelector('.food-input');
-                        const modifierSelect = row.querySelector('.prep-modifier');
-                        const foodName = input.value.trim().toLowerCase();
-                        const modifier = parseFloat(modifierSelect.value);
-
-                        if (foodData[foodName]) {
-                            const data = foodData[foodName];
-                            const itemGL = data.gl * modifier;
-                            
-                            currentMealGL += itemGL; // Add to this meal's GL
-                            
-                            if (itemGL >= 20) highGlFoods.push(input.value);
-                            if (data.category === 'sugar') sugarItems.push(input.value);
-                            if (data.category === 'fried') friedItems.push(input.value);
-                        }
-                    });
-
-                    // --- Process Side Items (With Quantity AND Modifier) ---
-                    const sideItemList = document.getElementById(`${mealId}-side-item-list`);
-                    const sideItemRows = sideItemList.querySelectorAll('.dynamic-list-item');
-
-                    sideItemRows.forEach(row => {
-                        const foodInput = row.querySelector('.side-item-input');
+                    foodItemRows.forEach(row => {
+                        const foodInput = row.querySelector('.food-input');
                         const quantityInput = row.querySelector('.quantity-input');
                         const modifierSelect = row.querySelector('.prep-modifier');
                         
@@ -808,6 +842,7 @@
 
                         if (foodData[foodName]) {
                             const data = foodData[foodName];
+                            
                             const standardServingGrams = 100;
                             const glPerGram = data.gl / standardServingGrams;
                             const parsedGrams = parseQuantityToGrams(quantityStr);
@@ -815,15 +850,14 @@
                             const baseItemGL = glPerGram * parsedGrams;
                             const finalItemGL = baseItemGL * modifier;
                             
-                            currentMealGL += finalItemGL; // Add to this meal's GL
+                            currentMealGL += finalItemGL;
                             
-                            if (finalItemGL >= 20) highGlFoods.push(`${foodInput.value} (${quantityStr})`);
-                            if (data.category === 'sugar') sugarItems.push(input.value);
-                            if (data.category === 'fried') friedItems.push(input.value);
+                            if (finalItemGL >= 20) highGlFoods.push(`${foodInput.value} (${quantityStr || '1 serving'})`);
+                            if (data.category === 'sugar') sugarItems.push(foodInput.value);
+                            if (data.category === 'fried') friedItems.push(foodInput.value);
                         }
                     });
 
-                    // --- Store meal-specific GL ---
                     if (mealId === 'dinner') {
                         dinnerGL = currentMealGL;
                     }
@@ -831,14 +865,16 @@
                 }
             });
 
-            // *** NEW: Get time data ***
+            // --- Get time data ---
             const dinnerTimeStr = document.getElementById('dinner-time').value;
             const sleepTimeStr = document.getElementById('sleep-time').value;
+            const wakeTimeStr = document.getElementById('wake-time').value;
 
-            displayResults(totalGL, highGlFoods, sugarItems, friedItems, skippedMeals, dinnerTimeStr, sleepTimeStr, dinnerGL);
+            displayResults(totalGL, highGlFoods, sugarItems, friedItems, skippedMeals, dinnerTimeStr, sleepTimeStr, wakeTimeStr, dinnerGL);
         }
 
-        function displayResults(totalGL, highGlFoods, sugarItems, friedItems, skippedMeals, dinnerTimeStr, sleepTimeStr, dinnerGL) {
+        // UNCHANGED: displayResults function
+        function displayResults(totalGL, highGlFoods, sugarItems, friedItems, skippedMeals, dinnerTimeStr, sleepTimeStr, wakeTimeStr, dinnerGL) {
             const scoreContainer = document.getElementById('score-container');
             const recommendationsList = document.getElementById('recommendations-list');
             
@@ -864,14 +900,31 @@
             // 2. Build and Prioritize Recommendations
             const recommendations = [];
 
-            // *** NEW: Meal Timing Recommendation ***
+            if (sleepTimeStr && wakeTimeStr) {
+                const sleepDurationHours = calculateTimeGap(sleepTimeStr, wakeTimeStr);
+                let priority = 3;
+                let title = 'Sleep Duration';
+                let description = `You slept for <b>${sleepDurationHours.toFixed(1)} hours</b>.`;
+
+                if (sleepDurationHours < 7) {
+                    priority = 1;
+                    title = 'Improve Sleep Duration';
+                    description = `You only slept for <b>${sleepDurationHours.toFixed(1)} hours</b>. Getting less than 7 hours of quality sleep can negatively impact blood sugar control and overall health. Aim for 7-9 hours.`;
+                }
+                
+                recommendations.push({
+                    priority: priority,
+                    title: title,
+                    description: description
+                });
+            }
+
             if (dinnerTimeStr && sleepTimeStr && !document.getElementById('skip-dinner').checked) {
                 const gapHours = calculateTimeGap(dinnerTimeStr, sleepTimeStr);
                 if (gapHours >= 0 && gapHours < 3) {
                     let description = `You went to sleep only <b>${gapHours.toFixed(1)} hours</b> after dinner. Eating close to bedtime can disrupt digestion and blood sugar. Try to finish your last meal at least 3 hours before sleep.`;
                     
-                    // Add a stronger warning if dinner was high-GL
-                    if (dinnerGL > 40) { // We can set 40 as a "high-GL dinner"
+                    if (dinnerGL > 40) {
                         description += `<br><b>This is especially important as your dinner had a high Glycemic Load (${Math.round(dinnerGL)}).</b>`;
                     }
                     recommendations.push({
@@ -881,9 +934,7 @@
                     });
                 }
             }
-            // *** END NEW RECOMMENDATION ***
-
-
+            
             if (totalGL > 100) {
                 recommendations.push({
                     priority: 1,
@@ -946,7 +997,6 @@
                     recommendationsList.appendChild(li);
                 });
         }
-
     </script>
 </body>
 </html>
