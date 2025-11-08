@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Personal Diet Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #ecf0f1;
+            --accent-color: #3498db; /* Blue accent */
+            --text-color: #34495e;
+            --light-gray: #eef5fa; /* New background color */
+            --medium-gray: #bdc3c7;
+            --dark-gray: #7f8c8d;
+            --danger-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 2rem auto;
+            padding: 0;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(to right, var(--primary-color), #34495e);
+            color: white;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        header .logo {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            border: 2px solid white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        #dietForm {
+            padding: 2rem;
+        }
+
+        .meal {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
+            background-color: #fff;
+            transition: all 0.3s;
+        }
+        
+        .meal.disabled {
+            background-color: #f8f9fa;
+            opacity: 0.7;
+        }
+
+        .meal h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--dark-gray);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: 'Lato', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+
+        .suggestions {
+            border: 1px solid var(--medium-gray);
+            border-top: none;
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: #fff;
+            position: absolute;
+            z-index: 100;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 0 0 4px 4px;
+        }
+
+        .suggestion-item {
+            padding: 0.75rem;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover {
+            background-color: var(--secondary-color);
+        }
+
+        button {
+            display: inline-block;
+            width: auto;
+            padding: 0.7rem 1.4rem;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--accent-color);
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .submit-button {
+            width: 100%;
+            font-size: 1.2rem;
+            padding: 1rem;
+            background: linear-gradient(to right, var(--success-color), #66bb6a);
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .submit-button:hover {
+            background: linear-gradient(to right, #43a047, #558b2f);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .dynamic-list-item {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+
+        .dynamic-list-item .input-wrapper {
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .remove-item-btn {
+            background-color: var(--danger-color);
+            padding: 0.5rem 0.75rem;
+        }
+        .remove-item-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .skip-meal-container {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .skip-meal-container label {
+            margin-bottom: 0;
+            margin-left: 0.5rem;
+            font-weight: normal;
+            text-transform: none;
+            color: var(--text-color);
+        }
+
+        #results {
+            display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            background-color: var(--secondary-color);
+        }
+
+        #results h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-top: 0;
+            font-family: 'Roboto', sans-serif;
+            font-size: 2rem;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .score-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 8px;
+        }
+        .score-card.low { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .score-card.medium { background-color: #fffde7; color: #f9a825; border: 1px solid #fff59d; }
+        .score-card.high { background-color: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+
+        .score-card p { margin: 0; font-size: 1.2rem; font-weight: 500; }
+        .score-card .score { font-size: 4rem; font-weight: 700; margin: 0.5rem 0; color: var(--primary-color); }
+
+        .recommendations ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .recommendations li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 5px;
+            border-left: 4px solid var(--accent-color);
+        }
+        .recommendations li::before {
+            content: '💡';
+            margin-right: 0.75rem;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">DA</div>
+        <h1>Your Personal Diet Analyzer</h1>
+    </header>
+    <div class="container">
+        <form id="dietForm">
+            <div class="meal" id="breakfast-meal">
+                <h2>Breakfast</h2>
+                <div class="meal-content">
+                    <label>Main Foods</label>
+                    <div id="breakfast-food-list"></div>
+                    <button type="button" class="add-food-btn" data-meal="breakfast">Add Food</button>
+                    <label style="margin-top: 1rem;">Side Items</label>
+                    <div id="breakfast-side-item-list"></div>
+                    <button type="button" class="add-side-item-btn" data-meal="breakfast">Add Side Item</button>
+                </div>
+                <div class="skip-meal-container">
+                    <input type="checkbox" class="skip-meal-checkbox" id="skip-breakfast" data-meal="breakfast">
+                    <label for="skip-breakfast">I did not eat this meal</label>
+                </div>
+            </div>
+            <div class="meal" id="lunch-meal">
+                <h2>Lunch</h2>
+                <div class="meal-content">
+                    <label>Main Foods</label>
+                    <div id="lunch-food-list"></div>
+                    <button type="button" class="add-food-btn" data-meal="lunch">Add Food</button>
+                    <label style="margin-top: 1rem;">Side Items</label>
+                    <div id="lunch-side-item-list"></div>
+                    <button type="button" class="add-side-item-btn" data-meal="lunch">Add Side Item</button>
+                </div>
+                <div class="skip-meal-container">
+                    <input type="checkbox" class="skip-meal-checkbox" id="skip-lunch" data-meal="lunch">
+                    <label for="skip-lunch">I did not eat this meal</label>
+                </div>
+            </div>
+            <div class="meal" id="snacks-meal">
+                <h2>Snacks</h2>
+                <div class="meal-content">
+                    <label>Main Foods</label>
+                    <div id="snacks-food-list"></div>
+                    <button type="button" class="add-food-btn" data-meal="snacks">Add Food</button>
+                    <label style="margin-top: 1rem;">Side Items</label>
+                    <div id="snacks-side-item-list"></div>
+                    <button type="button" class="add-side-item-btn" data-meal="snacks">Add Side Item</button>
+                </div>
+                <div class="skip-meal-container">
+                    <input type="checkbox" class="skip-meal-checkbox" id="skip-snacks" data-meal="snacks">
+                    <label for="skip-snacks">I did not eat this meal</label>
+                </div>
+            </div>
+            <div class="meal" id="dinner-meal">
+                <h2>Dinner</h2>
+                <div class="meal-content">
+                    <label>Main Foods</label>
+                    <div id="dinner-food-list"></div>
+                    <button type="button" class="add-food-btn" data-meal="dinner">Add Food</button>
+                    <label style="margin-top: 1rem;">Side Items</label>
+                    <div id="dinner-side-item-list"></div>
+                    <button type="button" class="add-side-item-btn" data-meal="dinner">Add Side Item</button>
+                </div>
+                <div class="skip-meal-container">
+                    <input type="checkbox" class="skip-meal-checkbox" id="skip-dinner" data-meal="dinner">
+                    <label for="skip-dinner">I did not eat this meal</label>
+                </div>
+            </div>
+            <button type="submit" class="submit-button">Analyze My Diet</button>
+        </form>
+
+        <div id="results">
+            <h2>Diet Analysis Report</h2>
+            <div class="results-grid">
+                <div id="score-container"></div>
+                <div class="recommendations">
+                    <h3>Recommendations</h3>
+                    <ul id="recommendations-list"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <template id="food-template">
+        <div class="dynamic-list-item">
+            <div class="input-wrapper">
+                <input type="text" class="food-input" placeholder="Food Item" autocomplete="off">
+                <div class="suggestions"></div>
+            </div>
+            <button type="button" class="remove-item-btn">X</button>
+        </div>
+    </template>
+
+    <template id="side-item-template">
+        <div class="dynamic-list-item">
+            <div class="input-wrapper">
+                <input type="text" class="side-item-input" placeholder="Side Item" autocomplete="off">
+                <div class="suggestions"></div>
+            </div>
+            <input type="text" class="quantity-input" placeholder="e.g., 1 cup, 2 tsp">
+            <button type="button" class="remove-item-btn">X</button>
+        </div>
+    </template>
+
+    <script>
+        let isFormDirty = false;
+
+        const foodData = {
+            'apple': { gl: 6, category: 'fruit' },
+            'almonds': { gl: 0, category: 'protein' },
+            'asparagus': { gl: 1, category: 'vegetable' },
+            'avocado': { gl: 1, category: 'fruit' },
+            'beans': { gl: 7, category: 'protein' },
+            'broccoli': { gl: 1, category: 'vegetable' },
+            'bell pepper': { gl: 1, category: 'vegetable' },
+            'brinjal': { gl: 1, category: 'vegetable' },
+            'cabbage': { gl: 1, category: 'vegetable' },
+            'carrot': { gl: 2, category: 'vegetable' },
+            'cauliflower': { gl: 1, category: 'vegetable' },
+            'cheese': { gl: 0, category: 'dairy' },
+            'chicken': { gl: 0, category: 'protein' },
+            'chickpeas': { gl: 8, category: 'protein' },
+            'cucumber': { gl: 1, category: 'vegetable' },
+            'dal': { gl: 8, category: 'protein' },
+            'toor dal': { gl: 8, category: 'protein' },
+            'moong dal': { gl: 7, category: 'protein' },
+            'masoor dal': { gl: 7, category: 'protein' },
+            'urad dal': { gl: 8, category: 'protein' },
+            'egg': { gl: 0, category: 'protein' },
+            'eggplant': { gl: 1, category: 'vegetable' },
+            'fish': { gl: 0, category: 'protein' },
+            'garlic': { gl: 1, category: 'vegetable' },
+            'ginger': { gl: 1, category: 'vegetable' },
+            'grapefruit': { gl: 3, category: 'fruit' },
+            'ladyfinger': { gl: 1, category: 'vegetable' },
+            'lemon': { gl: 0, category: 'fruit' },
+            'lime': { gl: 0, category: 'fruit' },
+            'lentils': { gl: 5, category: 'protein' },
+            'lettuce': { gl: 1, category: 'vegetable' },
+            'milk': { gl: 4, category: 'dairy' },
+            'mushroom': { gl: 0, category: 'vegetable' },
+            'nuts': { gl: 1, category: 'protein' },
+            'onion': { gl: 1, category: 'vegetable' },
+            'orange': { gl: 4, category: 'fruit' },
+            'peach': { gl: 5, category: 'fruit' },
+            'peanuts': { gl: 1, category: 'protein' },
+            'pumpkin': { gl: 3, category: 'vegetable' },
+            'radish': { gl: 1, category: 'vegetable' },
+            'spinach': { gl: 1, category: 'vegetable' },
+            'strawberry': { gl: 1, category: 'fruit' },
+            'tofu': { gl: 1, category: 'protein' },
+            'tomato': { gl: 1, category: 'vegetable' },
+            'turnip': { gl: 1, category: 'vegetable' },
+            'yogurt': { gl: 5, category: 'dairy' },
+            'sambar': { gl: 9, category: 'prepared' },
+            'rasam': { gl: 7, category: 'prepared' },
+            'chutney': { gl: 4, category: 'prepared' },
+            'salad': { gl: 5, category: 'prepared' },
+            'banana': { gl: 12, category: 'fruit' },
+            'brown rice': { gl: 16, category: 'grain' },
+            'chapati': { gl: 15, category: 'grain' },
+            'curry': { gl: 14, category: 'prepared' },
+            'dosa': { gl: 18, category: 'grain' },
+            'idli': { gl: 17, category: 'grain' },
+            'korma': { gl: 16, category: 'prepared' },
+            'oatmeal': { gl: 13, category: 'grain' },
+            'paratha': { gl: 18, category: 'grain' },
+            'pasta': { gl: 15, category: 'grain' },
+            'pongal': { gl: 17, category: 'grain' },
+            'pulao': { gl: 18, category: 'grain' },
+            'quinoa': { gl: 13, category: 'grain' },
+            'roti': { gl: 15, category: 'grain' },
+            'soup': { gl: 12, category: 'prepared' },
+            'sweet potato': { gl: 17, category: 'vegetable' },
+            'upma': { gl: 18, category: 'grain' },
+            'utappam': { gl: 18, category: 'grain' },
+            'whole wheat bread': { gl: 12, category: 'grain' },
+            'lassi': { gl: 15, category: 'dairy' },
+            'chai': { gl: 12, category: 'beverage' },
+            'bagel': { gl: 25, category: 'grain' },
+            'barfi': { gl: 30, category: 'sugar' },
+            'bhaji': { gl: 22, category: 'fried' },
+            'biryani': { gl: 28, category: 'grain' },
+            'burrito': { gl: 26, category: 'prepared' },
+            'cake': { gl: 24, category: 'sugar' },
+            'candy': { gl: 30, category: 'sugar' },
+            'cereal': { gl: 20, category: 'grain' },
+            'chocolate': { gl: 22, category: 'sugar' },
+            'cookies': { gl: 22, category: 'sugar' },
+            'cornflakes': { gl: 23, category: 'grain' },
+            'crackers': { gl: 21, category: 'grain' },
+            'croissant': { gl: 22, category: 'grain' },
+            'dabeli': { gl: 25, category: 'prepared' },
+            'donut': { gl: 24, category: 'sugar' },
+            'fafda': { gl: 24, category: 'fried' },
+            'french fries': { gl: 21, category: 'fried' },
+            'gulab jamun': { gl: 35, category: 'sugar' },
+            'halwa': { gl: 32, category: 'sugar' },
+            'hamburger': { gl: 24, category: 'prepared' },
+            'hot dog': { gl: 23, category: 'prepared' },
+            'ice cream': { gl: 24, category: 'sugar' },
+            'jalebi': { gl: 35, category: 'sugar' },
+            'kachori': { gl: 28, category: 'fried' },
+            'misal pav': { gl: 26, category: 'prepared' },
+            'muffin': { gl: 23, category: 'grain' },
+            'naan': { gl: 25, category: 'grain' },
+            'pakora': { gl: 22, category: 'fried' },
+            'pani puri': { gl: 25, category: 'fried' },
+            'pie': { gl: 26, category: 'sugar' },
+            'pizza': { gl: 22, category: 'grain' },
+            'popcorn': { gl: 20, category: 'snack' },
+            'potato chips': { gl: 21, category: 'snack' },
+            'pretzel': { gl: 22, category: 'snack' },
+            'puri': { gl: 26, category: 'fried' },
+            'rasgulla': { gl: 33, category: 'sugar' },
+            'samosa': { gl: 28, category: 'fried' },
+            'sandwich': { gl: 24, category: 'prepared' },
+            'sev': { gl: 23, category: 'fried' },
+            'soda': { gl: 25, category: 'sugar' },
+            'sugar': { gl: 23, category: 'sugar' },
+            'taco': { gl: 22, category: 'prepared' },
+            'thepla': { gl: 20, category: 'grain' },
+            'toast': { gl: 22, category: 'grain' },
+            'vada': { gl: 27, category: 'fried' },
+            'vada pav': { gl: 30, category: 'prepared' },
+            'waffle': { gl: 25, category: 'grain' },
+            'white bread': { gl: 25, category: 'grain' },
+            'white rice': { gl: 29, category: 'grain' },
+        };
+        const allFoodNames = Object.keys(foodData);
+
+        function setupAutocomplete(input, suggestionsContainer, database) {
+            const showSuggestions = () => {
+                const value = input.value.toLowerCase();
+                let filtered = database;
+                if (value) {
+                    filtered = database.filter(item => item.toLowerCase().includes(value));
+                }
+                
+                suggestionsContainer.innerHTML = '';
+                filtered.forEach(item => {
+                    const div = document.createElement('div');
+                    div.classList.add('suggestion-item');
+                    div.textContent = item;
+                    div.addEventListener('click', () => {
+                        input.value = item;
+                        suggestionsContainer.innerHTML = '';
+                    });
+                    suggestionsContainer.appendChild(div);
+                });
+            };
+
+            input.addEventListener('input', showSuggestions);
+            input.addEventListener('focus', showSuggestions);
+        }
+
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.input-wrapper')) {
+                document.querySelectorAll('.suggestions').forEach(s => s.innerHTML = '');
+            }
+        });
+
+        function addDynamicInput(meal, type, inputClass) {
+            isFormDirty = true;
+            const list = document.getElementById(`${meal}-${type}-list`);
+            const template = document.getElementById(`${type}-template`);
+            const clone = template.content.cloneNode(true);
+            
+            const input = clone.querySelector(`.${inputClass}`);
+            const suggestionsContainer = clone.querySelector('.suggestions');
+            setupAutocomplete(input, suggestionsContainer, allFoodNames);
+
+            clone.querySelector('.remove-item-btn').addEventListener('click', (e) => {
+                e.target.closest('.dynamic-list-item').remove();
+            });
+            list.appendChild(clone);
+            
+            input.focus();
+        }
+
+        document.querySelectorAll('.add-food-btn').forEach(button => {
+            button.addEventListener('click', () => addDynamicInput(button.dataset.meal, 'food', 'food-input'));
+        });
+
+        document.querySelectorAll('.add-side-item-btn').forEach(button => {
+            button.addEventListener('click', () => addDynamicInput(button.dataset.meal, 'side-item', 'side-item-input'));
+        });
+
+        document.querySelectorAll('.skip-meal-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const meal = e.target.dataset.meal;
+                const mealContainer = document.getElementById(`${meal}-meal`);
+                const mealContent = mealContainer.querySelector('.meal-content');
+                if (e.target.checked) {
+                    mealContent.style.display = 'none';
+                    mealContainer.classList.add('disabled');
+                } else {
+                    mealContent.style.display = 'block';
+                    mealContainer.classList.remove('disabled');
+                }
+            });
+        });
+
+        document.getElementById('dietForm').addEventListener('input', () => { isFormDirty = true; });
+
+        document.getElementById('dietForm').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+
+        function validateForm() {
+            const meals = ['breakfast', 'lunch', 'snacks', 'dinner'];
+            const missingMeals = [];
+            for (const meal of meals) {
+                const isSkipped = document.getElementById(`skip-${meal}`).checked;
+                if (!isSkipped) {
+                    const foodList = document.getElementById(`${meal}-food-list`);
+                    if (foodList.children.length === 0) {
+                        missingMeals.push(meal.charAt(0).toUpperCase() + meal.slice(1));
+                    }
+                }
+            }
+
+            if (missingMeals.length > 0) {
+                alert(`Please add at least one main food for the following meals: ${missingMeals.join(', ')}`);
+                return false;
+            }
+            return true;
+        }
+
+        document.getElementById('dietForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            if (!validateForm()) {
+                return;
+            }
+
+            if (confirm("Are you sure you want to analyze your diet?")) {
+                isFormDirty = false;
+                analyzeDiet();
+                document.getElementById('results').style.display = 'block';
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        });
+
+        window.addEventListener('beforeunload', function (e) {
+            if (isFormDirty) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+            }
+        });
+
+        function analyzeDiet() {
+            let totalGL = 0;
+            const highGlFoods = [];
+            const sugarItems = [];
+            const friedItems = [];
+            const skippedMeals = [];
+
+            const meals = ['breakfast', 'lunch', 'snacks', 'dinner'];
+            meals.forEach(mealId => {
+                const isSkipped = document.getElementById(`skip-${mealId}`).checked;
+                if (isSkipped) {
+                    skippedMeals.push(mealId);
+                } else {
+                    const foodList = document.getElementById(`${mealId}-food-list`);
+                    const sideItemList = document.getElementById(`${mealId}-side-item-list`);
+                    const foodInputs = foodList.querySelectorAll('.food-input');
+                    const sideItemInputs = sideItemList.querySelectorAll('.side-item-input');
+                    const allInputs = [...foodInputs, ...sideItemInputs];
+
+                    allInputs.forEach(input => {
+                        const foodName = input.value.trim().toLowerCase();
+                        if (foodData[foodName]) {
+                            const data = foodData[foodName];
+                            totalGL += data.gl;
+                            if (data.gl >= 20) highGlFoods.push(input.value);
+                            if (data.category === 'sugar') sugarItems.push(input.value);
+                            if (data.category === 'fried') friedItems.push(input.value);
+                        }
+                    });
+                }
+            });
+
+            displayResults(totalGL, highGlFoods, sugarItems, friedItems, skippedMeals);
+        }
+
+        function displayResults(totalGL, highGlFoods, sugarItems, friedItems, skippedMeals) {
+            const scoreContainer = document.getElementById('score-container');
+            const recommendationsList = document.getElementById('recommendations-list');
+            
+            scoreContainer.innerHTML = '';
+            recommendationsList.innerHTML = '';
+
+            let scoreClass = 'low';
+            let scoreMessage = 'Good! Your estimated Glycemic Load is low.';
+            if (totalGL > 70) {
+                scoreClass = 'medium';
+                scoreMessage = 'Could be better. Your estimated Glycemic Load is medium.';
+            }
+            if (totalGL > 120) {
+                scoreClass = 'high';
+                scoreMessage = 'Attention! Your estimated Glycemic Load is high.';
+            }
+
+            const scoreCard = document.createElement('div');
+            scoreCard.className = `score-card ${scoreClass}`;
+            scoreCard.innerHTML = `<p>${scoreMessage}</p><div class="score">${Math.round(totalGL)}</div>`;
+            scoreContainer.appendChild(scoreCard);
+
+            if (skippedMeals.length > 0) {
+                const li = document.createElement('li');
+                li.innerHTML = `You skipped ${skippedMeals.join(', ')}. Eating regular meals helps keep your blood sugar stable. Try not to skip meals, especially breakfast.`;
+                recommendationsList.appendChild(li);
+            }
+
+            if (totalGL > 100) {
+                const li = document.createElement('li');
+                li.innerHTML = `Your total Glycemic Load is high. Try to swap high-GL foods for low-GL options. For example, choose <b>brown rice</b> instead of <b>white rice</b>, or have an <b>apple</b> instead of a <b>donut</b>.`;
+                recommendationsList.appendChild(li);
+            }
+
+            if (highGlFoods.length > 0) {
+                const li = document.createElement('li');
+                li.innerHTML = `You consumed some high-glycemic foods: <b>${highGlFoods.join(', ')}</b>. These can cause rapid spikes in blood sugar. Consider reducing their portion size or frequency.`;
+                recommendationsList.appendChild(li);
+            }
+            
+            if (friedItems.length > 0) {
+                const li = document.createElement('li');
+                li.innerHTML = `You seem to enjoy fried foods like <b>${friedItems.join(', ')}</b>. While tasty, they are often high in unhealthy fats and calories. Consider baked, grilled, or steamed alternatives.`;
+                recommendationsList.appendChild(li);
+            }
+
+            if (sugarItems.length > 1) {
+                const li = document.createElement('li');
+                li.innerHTML = `You have a high intake of sugary items like <b>${sugarItems.join(', ')}</b>. Reducing added sugars is one of the best ways to improve your diet.`;
+                recommendationsList.appendChild(li);
+            }
+
+            const li_prot = document.createElement('li');
+            li_prot.innerHTML = `Ensure each meal contains a source of lean protein like <b>chicken, fish, beans, or tofu</b>. Protein helps stabilize blood sugar.`;
+            recommendationsList.appendChild(li_prot);
+
+            const li_veg = document.createElement('li');
+            li_veg.innerHTML = `Fill half your plate with non-starchy vegetables like <b>spinach, broccoli, and bell peppers</b>. They are low in calories and high in nutrients.`;
+            recommendationsList.appendChild(li_veg);
+        }
+
+    </script>
+</body>
+</html>
