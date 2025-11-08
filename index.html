@@ -207,7 +207,16 @@
             text-transform: none;
             color: var(--text-color);
         }
-
+        /* ADD THIS TO YOUR <style> BLOCK */
+        .meal-time-input {
+            padding: 0.75rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            font-family: 'Lato', sans-serif;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            width: auto; /* Make it fit the content */
+        }
         #results {
             display: none;
             margin-top: 2rem;
@@ -283,6 +292,9 @@
             <div class="meal" id="breakfast-meal">
                 <h2>Breakfast</h2>
                 <div class="meal-content">
+                    <label for="breakfast-time">Meal Time</label>
+                    <input type="time" id="breakfast-time" class="meal-time-input">
+
                     <label>Main Foods</label>
                     <div id="breakfast-food-list"></div>
                     <button type="button" class="add-food-btn" data-meal="breakfast">Add Food</button>
@@ -298,6 +310,8 @@
             <div class="meal" id="lunch-meal">
                 <h2>Lunch</h2>
                 <div class="meal-content">
+                    <label for="lunch-time">Meal Time</label>
+                    <input type="time" id="lunch-time" class="meal-time-input">
                     <label>Main Foods</label>
                     <div id="lunch-food-list"></div>
                     <button type="button" class="add-food-btn" data-meal="lunch">Add Food</button>
@@ -313,6 +327,8 @@
             <div class="meal" id="snacks-meal">
                 <h2>Snacks</h2>
                 <div class="meal-content">
+                    <label for="snacks-time">Meal Time</label>
+                    <input type="time" id="snacks-time" class="meal-time-input">
                     <label>Main Foods</label>
                     <div id="snacks-food-list"></div>
                     <button type="button" class="add-food-btn" data-meal="snacks">Add Food</button>
@@ -328,6 +344,8 @@
             <div class="meal" id="dinner-meal">
                 <h2>Dinner</h2>
                 <div class="meal-content">
+                    <label for="dinner-time">Meal Time</label>
+                    <input type="time" id="dinner-time" class="meal-time-input">
                     <label>Main Foods</label>
                     <div id="dinner-food-list"></div>
                     <button type="button" class="add-food-btn" data-meal="dinner">Add Food</button>
@@ -339,6 +357,11 @@
                     <input type="checkbox" class="skip-meal-checkbox" id="skip-dinner" data-meal="dinner">
                     <label for="skip-dinner">I did not eat this meal</label>
                 </div>
+            </div>
+            <div class="meal" id="sleep-section">
+            <h2>Sleep Time</h2>
+            <label for="sleep-time">What time did you go to sleep?</label>
+            <input type="time" id="sleep-time" class="meal-time-input">
             </div>
             <button type="submit" class="submit-button">Analyze My Diet</button>
         </form>
@@ -361,6 +384,11 @@
                 <input type="text" class="food-input" placeholder="Food Item" autocomplete="off">
                 <div class="suggestions"></div>
             </div>
+            <select class="prep-modifier">
+                <option value="1.0" selected>Standard Prep</option>
+                <option value="0.8">Light / Healthy Prep</option>
+                <option value="1.25">Heavy / Indulgent Prep</option>
+            </select>
             <button type="button" class="remove-item-btn">X</button>
         </div>
     </template>
@@ -371,7 +399,12 @@
                 <input type="text" class="side-item-input" placeholder="Side Item" autocomplete="off">
                 <div class="suggestions"></div>
             </div>
-            <input type="text" class="quantity-input" placeholder=" In Grams, Cups, Tablespoons, etc.">
+            <input type="text" class="quantity-input" placeholder="In Grams, Cups, etc.">
+            <select class="prep-modifier">
+                <option value="1.0" selected>Standard Prep</option>
+                <option value="0.8">Light / Healthy Prep</option>
+                <option value="1.25">Heavy / Indulgent Prep</option>
+            </select>
             <button type="button" class="remove-item-btn">X</button>
         </div>
     </template>
@@ -604,24 +637,68 @@
                 e.preventDefault();
             }
         });
+ /**
+ * Calculates the time difference in hours between two "HH:MM" time strings.
+ * Correctly handles overnight (e.g., 22:00 to 02:00).
+ * @param {string} startTimeStr - e.g., "21:00"
+ * @param {string} endTimeStr - e.g., "06:00"
+ * @returns {number} The difference in hours.
+ */
+        function calculateTimeGap(startTimeStr, endTimeStr) {
+            try {
+                const [startH, startM] = startTimeStr.split(':').map(Number);
+                const [endH, endM] = endTimeStr.split(':').map(Number);
 
-        function validateForm() {
+                let startMinutes = (startH * 60) + startM;
+                let endMinutes = (endH * 60) + endM;
+
+                // Handle overnight
+                if (endMinutes < startMinutes) {
+                    endMinutes += 24 * 60; // Add 24 hours in minutes
+                }
+
+                const diffMinutes = endMinutes - startMinutes;
+                return diffMinutes / 60; // Convert to hours
+            } catch (e) {
+                console.error("Error calculating time gap:", e);
+                return -1; // Return an error code
+            }
+        }
+       function validateForm() {
             const meals = ['breakfast', 'lunch', 'snacks', 'dinner'];
             const missingMeals = [];
+            const missingTimes = [];
+
             for (const meal of meals) {
                 const isSkipped = document.getElementById(`skip-${meal}`).checked;
                 if (!isSkipped) {
+                    // Check for at least one main food
                     const foodList = document.getElementById(`${meal}-food-list`);
                     if (foodList.children.length === 0) {
                         missingMeals.push(meal.charAt(0).toUpperCase() + meal.slice(1));
                     }
+                    // Check for meal time
+                    const timeInput = document.getElementById(`${meal}-time`);
+                    if (!timeInput.value) {
+                        missingTimes.push(meal.charAt(0).toUpperCase() + meal.slice(1));
+                    }
                 }
+            }
+
+            // Check for sleep time
+            if (!document.getElementById('sleep-time').value) {
+                missingTimes.push('Sleep');
             }
 
             if (missingMeals.length > 0) {
                 alert(`Please add at least one main food for the following meals: ${missingMeals.join(', ')}`);
                 return false;
             }
+            if (missingTimes.length > 0) {
+                alert(`Please enter a time for the following: ${missingTimes.join(', ')}`);
+                return false;
+            }
+            
             return true;
         }
 
@@ -679,60 +756,89 @@
 
         function analyzeDiet() {
             let totalGL = 0;
+            let dinnerGL = 0; // *** NEW: Track dinner GL separately ***
             const highGlFoods = [];
             const sugarItems = [];
             const friedItems = [];
             const skippedMeals = [];
 
             const meals = ['breakfast', 'lunch', 'snacks', 'dinner'];
+            
             meals.forEach(mealId => {
+                let currentMealGL = 0; // Track GL for the current meal
                 const isSkipped = document.getElementById(`skip-${mealId}`).checked;
+                
                 if (isSkipped) {
                     skippedMeals.push(mealId);
                 } else {
+                    // --- Process Main Foods (With Modifier) ---
                     const foodList = document.getElementById(`${mealId}-food-list`);
-                    const sideItemList = document.getElementById(`${mealId}-side-item-list`);
-                    
-                    // Process main foods (no quantity, use default GL)
-                    const foodInputs = foodList.querySelectorAll('.food-input');
-                    foodInputs.forEach(input => {
+                    const foodRows = foodList.querySelectorAll('.dynamic-list-item');
+
+                    foodRows.forEach(row => {
+                        const input = row.querySelector('.food-input');
+                        const modifierSelect = row.querySelector('.prep-modifier');
                         const foodName = input.value.trim().toLowerCase();
+                        const modifier = parseFloat(modifierSelect.value);
+
                         if (foodData[foodName]) {
                             const data = foodData[foodName];
-                            totalGL += data.gl;
-                            if (data.gl >= 20) highGlFoods.push(input.value);
+                            const itemGL = data.gl * modifier;
+                            
+                            currentMealGL += itemGL; // Add to this meal's GL
+                            
+                            if (itemGL >= 20) highGlFoods.push(input.value);
                             if (data.category === 'sugar') sugarItems.push(input.value);
                             if (data.category === 'fried') friedItems.push(input.value);
                         }
                     });
 
-                    // Process side items (with quantity)
-                    const sideItems = sideItemList.querySelectorAll('.dynamic-list-item');
-                    sideItems.forEach(item => {
-                        const sideInput = item.querySelector('.side-item-input');
-                        const quantityInput = item.querySelector('.quantity-input');
+                    // --- Process Side Items (With Quantity AND Modifier) ---
+                    const sideItemList = document.getElementById(`${mealId}-side-item-list`);
+                    const sideItemRows = sideItemList.querySelectorAll('.dynamic-list-item');
+
+                    sideItemRows.forEach(row => {
+                        const foodInput = row.querySelector('.side-item-input');
+                        const quantityInput = row.querySelector('.quantity-input');
+                        const modifierSelect = row.querySelector('.prep-modifier');
                         
-                        const foodName = sideInput.value.trim().toLowerCase();
+                        const foodName = foodInput.value.trim().toLowerCase();
                         const quantityStr = quantityInput.value.trim();
-                        
+                        const modifier = parseFloat(modifierSelect.value);
+
                         if (foodData[foodName]) {
                             const data = foodData[foodName];
-                            const multiplier = parseQuantity(quantityStr);
-                            const adjustedGL = data.gl * multiplier;
+                            const standardServingGrams = 100;
+                            const glPerGram = data.gl / standardServingGrams;
+                            const parsedGrams = parseQuantityToGrams(quantityStr);
                             
-                            totalGL += adjustedGL;
-                            if (adjustedGL >= 20) highGlFoods.push(`${sideInput.value} (${quantityStr})`);
-                            if (data.category === 'sugar') sugarItems.push(sideInput.value);
-                            if (data.category === 'fried') friedItems.push(sideInput.value);
+                            const baseItemGL = glPerGram * parsedGrams;
+                            const finalItemGL = baseItemGL * modifier;
+                            
+                            currentMealGL += finalItemGL; // Add to this meal's GL
+                            
+                            if (finalItemGL >= 20) highGlFoods.push(`${foodInput.value} (${quantityStr})`);
+                            if (data.category === 'sugar') sugarItems.push(input.value);
+                            if (data.category === 'fried') friedItems.push(input.value);
                         }
                     });
+
+                    // --- Store meal-specific GL ---
+                    if (mealId === 'dinner') {
+                        dinnerGL = currentMealGL;
+                    }
+                    totalGL += currentMealGL;
                 }
             });
 
-            displayResults(totalGL, highGlFoods, sugarItems, friedItems, skippedMeals);
+            // *** NEW: Get time data ***
+            const dinnerTimeStr = document.getElementById('dinner-time').value;
+            const sleepTimeStr = document.getElementById('sleep-time').value;
+
+            displayResults(totalGL, highGlFoods, sugarItems, friedItems, skippedMeals, dinnerTimeStr, sleepTimeStr, dinnerGL);
         }
 
-        function displayResults(totalGL, highGlFoods, sugarItems, friedItems, skippedMeals) {
+        function displayResults(totalGL, highGlFoods, sugarItems, friedItems, skippedMeals, dinnerTimeStr, sleepTimeStr, dinnerGL) {
             const scoreContainer = document.getElementById('score-container');
             const recommendationsList = document.getElementById('recommendations-list');
             
@@ -757,6 +863,26 @@
 
             // 2. Build and Prioritize Recommendations
             const recommendations = [];
+
+            // *** NEW: Meal Timing Recommendation ***
+            if (dinnerTimeStr && sleepTimeStr && !document.getElementById('skip-dinner').checked) {
+                const gapHours = calculateTimeGap(dinnerTimeStr, sleepTimeStr);
+                if (gapHours >= 0 && gapHours < 3) {
+                    let description = `You went to sleep only <b>${gapHours.toFixed(1)} hours</b> after dinner. Eating close to bedtime can disrupt digestion and blood sugar. Try to finish your last meal at least 3 hours before sleep.`;
+                    
+                    // Add a stronger warning if dinner was high-GL
+                    if (dinnerGL > 40) { // We can set 40 as a "high-GL dinner"
+                        description += `<br><b>This is especially important as your dinner had a high Glycemic Load (${Math.round(dinnerGL)}).</b>`;
+                    }
+                    recommendations.push({
+                        priority: 1,
+                        title: 'Avoid Eating Close to Bedtime',
+                        description: description
+                    });
+                }
+            }
+            // *** END NEW RECOMMENDATION ***
+
 
             if (totalGL > 100) {
                 recommendations.push({
